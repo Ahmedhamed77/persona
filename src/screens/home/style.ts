@@ -8,4 +8,7 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 16,
   },
+  wrapperStyle: {
+    marginBottom: 12,
+  },
 });

@@ -1,6 +1,6 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {ArrowLeft} from 'assets/svg';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Pressable, SafeAreaView, ScrollView, View} from 'react-native';
 
 import {styles} from './style';
@@ -14,48 +14,59 @@ type HomeScreenType = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export const HomeScreen: React.FC<HomeScreenType> = ({navigation}) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string>('');
-  const [score, setScore] = useState({introvertPoint: 0, extrovertPoint: 0});
+  const [score, setScore] = useState({
+    introvertPoint: 0,
+    extrovertPoint: 0,
+  });
+
+  const [selections, setSelections] = useState<{[key: number]: string}>({});
 
   const currentQuestion = QUESTIONS[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === QUESTIONS.length - 1;
 
-  const handleNextQuestion = () => {
-    // Update score based on selected option
-    const selectedOptionDetails = currentQuestion.options.find(
-      option => option.value === selectedOption
-    );
+  const selectedOption = selections[currentQuestionIndex] || '';
 
-    if (selectedOptionDetails) {
-      setScore(prevScore => ({
-        introvertPoint: prevScore.introvertPoint + selectedOptionDetails.introvertPoint,
-        extrovertPoint: prevScore.extrovertPoint + selectedOptionDetails.extrovertPoint,
+  const updateScore = useCallback((option: QuestionOption) => {
+    setScore(prevScore => ({
+      introvertPoint: prevScore.introvertPoint + option.introvertPoint,
+      extrovertPoint: prevScore.extrovertPoint + option.extrovertPoint,
+    }));
+  }, []);
+
+  const handleSelectOption = useCallback(
+    (option: QuestionOption) => {
+      setSelections(prevSelections => ({
+        ...prevSelections,
+        [currentQuestionIndex]: option.value,
       }));
-    }
-
-    // Move to next question
-    if (currentQuestionIndex < QUESTIONS.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedOption(''); // Reset selection for the next question
-    }
-  };
-
-  const onGoToPrevQuestion = () => {
-    setCurrentQuestionIndex(prev => prev - 1);
-    setSelectedOption('');
-  };
-
-  const handleSelectOption = (option: QuestionOption) => {
-    setSelectedOption(option.value); // Correctly set selectedOption state to the option's value
-  };
+      updateScore(option);
+    },
+    [updateScore, currentQuestionIndex]
+  );
 
   const onShowResult = () => navigation.navigate('Result', {result: score});
-  const isLast = currentQuestionIndex === QUESTIONS.length - 1;
+
+  const handleNavigation = useCallback(() => {
+    if (isLastQuestion) {
+      onShowResult();
+    } else {
+      setCurrentQuestionIndex(prev => prev + 1);
+    }
+  }, [isLastQuestion, onShowResult]);
+
+  const handleGoBack = useCallback(() => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+    } else {
+      navigation.goBack();
+    }
+  }, [currentQuestionIndex, navigation]);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <View style={{marginBottom: 12}}>
-          <Pressable onPressIn={currentQuestionIndex > 0 ? onGoToPrevQuestion : navigation.goBack}>
+        <View style={styles.wrapperStyle}>
+          <Pressable onPressIn={handleGoBack}>
             <ArrowLeft />
           </Pressable>
 
@@ -73,8 +84,8 @@ export const HomeScreen: React.FC<HomeScreenType> = ({navigation}) => {
         />
 
         <CustomButton
-          title={isLast ? 'Show Result' : 'Next'}
-          onPress={isLast ? onShowResult : handleNextQuestion}
+          title={isLastQuestion ? 'Show Result' : 'Next'}
+          onPress={handleNavigation}
           disabled={!selectedOption}
         />
       </ScrollView>

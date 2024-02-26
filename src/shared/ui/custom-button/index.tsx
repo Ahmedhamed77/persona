@@ -1,13 +1,14 @@
 import React from 'react';
-import {Pressable, StyleProp, TextStyle, ViewStyle} from 'react-native';
+import {Pressable, PressableProps, StyleProp, TextStyle, ViewStyle} from 'react-native';
 
 import {styles} from './style';
 import {CustomText} from '../custom-text';
 
-interface CustomButtonType {
+import {COLORS} from '@/shared/colors';
+
+interface CustomButtonType extends Omit<PressableProps, 'style'> {
   title: string;
   wrapperStyle?: StyleProp<ViewStyle>;
-  onPress(): void;
   textStyle?: StyleProp<TextStyle>;
 }
 
@@ -15,11 +16,14 @@ export const CustomButton: React.FC<CustomButtonType> = ({
   title,
   wrapperStyle,
   textStyle,
-  onPress,
+  ...props
 }) => {
+  const isDisabled = props.disabled;
   return (
-    <Pressable onPressIn={onPress} style={[styles.container, wrapperStyle]}>
-      <CustomText style={textStyle} p3>
+    <Pressable
+      style={[styles.container, wrapperStyle, isDisabled && {backgroundColor: COLORS.COLOR_AA8}]}
+      {...props}>
+      <CustomText style={textStyle} p2>
         {title}
       </CustomText>
     </Pressable>

@@ -18,17 +18,18 @@ export const GetStartedScreen: React.FC<GetStartedScreenType> = ({navigation}) =
         contentContainerStyle={{
           flexGrow: 1,
           paddingHorizontal: 16,
+          paddingBottom: 22,
         }}>
         <View style={styles.contentContainer}>
           <CustomText style={{textAlign: 'center', paddingBottom: 6}} p1>
-            Interesting quiz awaiting you
+            Am I Introverted or Extroverted?
           </CustomText>
           <CustomText style={{textAlign: 'center'}} p3>
             So, where do you fall? Are you an introvert, extrovert, or something in between? Answer
             these questions about what you would do in any given situation to find out.
           </CustomText>
         </View>
-        <CustomButton title="Next" onPress={onGoToQuestionsScreen} />
+        <CustomButton title="Start" onPress={onGoToQuestionsScreen} />
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,14 +1,36 @@
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
-import {Text, View} from 'react-native';
+import {SafeAreaView, View} from 'react-native';
 
 import {styles} from './style';
 
-interface ResultScreenType {}
+import {Result} from '@/components';
+import {RootStackParamList} from '@/navigation/root-interface';
+import {CustomButton} from '@/shared';
 
-export const ResultScreen: React.FC<ResultScreenType> = () => {
+type ResultScreenType = NativeStackScreenProps<RootStackParamList, 'Result'>;
+
+export const ResultScreen: React.FC<ResultScreenType> = ({navigation, route}) => {
+  const {result} = route.params;
+  const isExtrovert = result.extrovertPoint > result.introvertPoint;
+
+  const onFinish = () => navigation.reset({index: 0, routes: [{name: 'GetStart'}]});
+
   return (
-    <View style={styles.container}>
-      <Text>Result Screen</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={{flex: 1, paddingHorizontal: 16}}>
+        <View style={styles.content}>
+          {isExtrovert ? (
+            <Result
+              title="You are more of a public extrovert and private introvert
+          "
+            />
+          ) : (
+            <Result title="You are more of a public introvert and private extrovert" />
+          )}
+        </View>
+        <CustomButton onPressIn={onFinish} title="Finish" />
+      </View>
+    </SafeAreaView>
   );
 };

@@ -1,5 +1,5 @@
 export type RootStackParamList = {
   GetStart: undefined;
   Home: undefined;
-  Result: undefined;
+  Result: {result: {extrovertPoint: number; introvertPoint: number}};
 };

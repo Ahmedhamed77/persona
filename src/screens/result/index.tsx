@@ -18,7 +18,7 @@ export const ResultScreen: React.FC<ResultScreenType> = ({navigation, route}) =>
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{flex: 1, paddingHorizontal: 16}}>
+      <View style={styles.wrapper}>
         <View style={styles.content}>
           {isExtrovert ? (
             <Result

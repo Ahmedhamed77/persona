@@ -27,10 +27,5 @@ export default function App() {
     return null;
   }
 
-  return (
-    <>
-      <StatusBar style="auto" />
-      <Root />
-    </>
-  );
+  return <Root />;
 }
